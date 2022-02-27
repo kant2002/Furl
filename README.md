@@ -8,8 +8,8 @@ When developing REST APIs, you often need to test or verify them in various ad h
 Imagine that you have an HTTP API that exposes resources for making restaurant reservations. For example, if you want to know how many free seats are available for a particular date, you can perform a simple `GET` request:
 
 ```fsharp
-> get "http://localhost:56268/availability/2017/3/17" [] |> bodyText;;
-> val it : string = "{"openings":[{"date":"2017-03-17","seats":10}]}"
+> получить "http://localhost:56268/availability/2017/3/17" [] |> текстТела;;
+> val оно : string = "{"openings":[{"date":"2017-03-17","seats":10}]}"
 ```
 
 ## Use
@@ -77,8 +77,8 @@ val json : string =
   "name": "Mark Seemann",
   "ema"+[44 chars]
 
-> post "http://localhost:56268/reservations" ["Content-Type", "application/json"] json;;
-> val it : HttpResponseMessage =
+> отправить "http://localhost:56268/reservations" ["Content-Type", "application/json"] json;;
+> val оно : HttpResponseMessage =
   StatusCode: 200, ReasonPhrase: 'OK', Version: 1.1, Content: System.Net.Http.StreamContent,  
 ```
 
@@ -87,8 +87,8 @@ In the above example, I've truncated the response, because it actually gives you
 If you want to query a resource and parse the response, that's easy to do as well:
 
 ```fsharp
-> get "http://localhost:56268/availability/2017/3/18" [] |> bodyText |> AvailabilityJson.Parse;;
-> val it : FSharp.Data.JsonProvider<...>.Root =
+> получить "http://localhost:56268/availability/2017/3/18" [] |> текстТела |> AvailabilityJson.Parse;;
+> val оно : FSharp.Data.JsonProvider<...>.Root =
   {
   "openings": [
     {

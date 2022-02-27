@@ -3,43 +3,43 @@
 open System
 open System.Net.Http
 
-let private addHeader (headers : Headers.HttpHeaders) (name, value : string) =
-    headers.Add (name, value)
+let private добавитьЗаголовок (заголовки : Headers.HttpHeaders) (название, значение : string) =
+    заголовки.Add (название, значение)
 
-let private addBody (req : HttpRequestMessage) headers body =
-    req.Content <- new StringContent (body)
-    let contentTypeHeader =
-        headers |> List.tryFind (fun (n, _) -> n = "Content-Type")
-    contentTypeHeader
-    |> Option.iter (fun (_, v) -> req.Content.Headers.ContentType.MediaType <- v)
+let private добавитьТело (запр : HttpRequestMessage) заголовки тело =
+    запр.Content <- new StringContent (тело)
+    let заголовокТипКонтента =
+        заголовки |> List.tryFind (fun (n, _) -> n = "Content-Type")
+    заголовокТипКонтента
+    |> Option.iter (fun (_, v) -> запр.Content.Headers.ContentType.MediaType <- v)
 
-let result (t : System.Threading.Tasks.Task<_>) = t.Result
+let результат (з : System.Threading.Tasks.Task<_>) = з.Result
 
-let composeMessage meth (url : Uri) headers body =
-    let req = new HttpRequestMessage (meth, url)
-    Option.iter (addBody req headers) body
+let скомпоноватьСообщение мет (урл : Uri) заголовки тело =
+    let запр = new HttpRequestMessage (мет, урл)
+    Option.iter (добавитьТело запр заголовки) тело
 
-    headers
+    заголовки
     |> List.partition (fun (n, _) -> n = "Content-Type")
     |> snd
-    |> List.iter (addHeader req.Headers)
-    req
+    |> List.iter (добавитьЗаголовок запр.Headers)
+    запр
 
-let get url headers =
-    use client = new HttpClient ()
+let получить урл заголовки =
+    use клиент = new HttpClient ()
     // HttpMethod is qualified to avoid collision with FSharp.Data.HttpMethod,
     // if FSharp.Data is imported in a script as well as Furl.
-    composeMessage Net.Http.HttpMethod.Get (Uri url) headers None
-    |> client.SendAsync
-    |> result
+    скомпоноватьСообщение Net.Http.HttpMethod.Get (Uri урл) заголовки None
+    |> клиент.SendAsync
+    |> результат
 
-let post url headers body =
-    use client = new HttpClient ()
+let отправить урл заголовки тело =
+    use клиент = new HttpClient ()
     // HttpMethod is qualified to avoid collision with FSharp.Data.HttpMethod,
     // if FSharp.Data is imported in a script as well as Furl.
-    composeMessage Net.Http.HttpMethod.Post (Uri url) headers (Some body)
-    |> client.SendAsync
-    |> result
+    скомпоноватьСообщение Net.Http.HttpMethod.Post (Uri урл) заголовки (Some тело)
+    |> клиент.SendAsync
+    |> результат
 
-let bodyText (resp : HttpResponseMessage) =
-    resp.Content.ReadAsStringAsync().Result
+let текстТела (отв : HttpResponseMessage) =
+    отв.Content.ReadAsStringAsync().Result
